@@ -27,7 +27,7 @@ export default function ChatPage() {
     const aiResponse = found
       ? found.response
       : "Sorry, Did not understand your query!";
-    const aiMsg = { sender: "Bot AI", text: aiResponse, feedback: null };
+    const aiMsg = { sender: "Soul AI", text: aiResponse, feedback: null };
     setMessages((m) => [...m, userMsg, aiMsg]);
     setInput("");
   };
@@ -115,10 +115,10 @@ export default function ChatPage() {
       <div className="chat-container">
         <div className="messages">
           {messages.map((msg, i) => {
-            const isAI = msg.sender === "Bot AI";
+            const isAI = msg.sender === "Soul AI";
             return (
               <div key={i} className={`message ${isAI ? "bot" : "user"}`}>
-                <span className="sender">{isAI ? "Bot AI" : "You"}</span>
+                <span className="sender">{isAI ? "Soul AI" : "You"}</span>
                 <p>{msg.text}</p>
                 {isAI && (
                   <div className="feedback-buttons">
