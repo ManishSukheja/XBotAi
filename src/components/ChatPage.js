@@ -115,7 +115,7 @@ export default function ChatPage() {
       <div className="chat-container">
         <div className="messages">
           {messages.map((msg, i) => {
-            const isAI = msg.sender === "Soul AI";
+            const isAI = msg.sender === "Bot AI";
             return (
               <div key={i} className={`message ${isAI ? "bot" : "user"}`}>
                 <span className="sender">{isAI ? "Bot AI" : "You"}</span>
