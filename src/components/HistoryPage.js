@@ -24,7 +24,7 @@ export default function HistoryPage() {
             {item.messages.map((m, idx) => (
               <div key={idx}>
                 <strong>{m.sender}:</strong> {m.text}
-                {m.sender === "Soul AI" && m.feedback && (
+                {m.sender === "Bot AI" && m.feedback && (
                   <em style={{ marginLeft: 6, color: "#6c757d" }}>
                     ({m.feedback})
                   </em>

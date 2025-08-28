@@ -19,6 +19,7 @@ export default function ChatPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
+
     const userMsg = { sender: "You", text: input };
     const found = data.find(
       (item) => item.question.toLowerCase() === input.toLowerCase()
@@ -26,7 +27,7 @@ export default function ChatPage() {
     const aiResponse = found
       ? found.response
       : "Sorry, Did not understand your query!";
-    const aiMsg = { sender: "Soul AI", text: aiResponse, feedback: null };
+    const aiMsg = { sender: "Bot AI", text: aiResponse, feedback: null };
     setMessages((m) => [...m, userMsg, aiMsg]);
     setInput("");
   };
@@ -54,7 +55,6 @@ export default function ChatPage() {
     setTextFeedback("");
   };
 
-  // Suggested prompts as cards
   const suggestedPrompts = [
     {
       title: "Hi, what is the weather",
@@ -74,93 +74,100 @@ export default function ChatPage() {
     }
   ];
 
-  // Welcome card for zero messages
-  if (messages.length === 0) {
-    return (
-      <div className="welcome-card">
-        <h2>How Can I Help You Today?</h2>
-        <div className="bot-logo"></div>
-        <div className="prompt-grid">
-          {suggestedPrompts.map((p, idx) => (
-            <div
-              className="prompt-card"
-              key={idx}
-              onClick={() => setInput(p.title)}
+  return (
+  <>
+    {messages.length === 0 ? (
+      <div className="chat-container">
+        <div className="welcome-card">
+          <h2>How Can I Help You Today?</h2>
+          <div className="bot-logo"></div>
+          <div className="prompt-grid">
+            {suggestedPrompts.map((p, idx) => (
+              <div
+                className="prompt-card"
+                key={idx}
+                onClick={() => setInput(p.title)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setInput(p.title);
+                }}
+              >
+                <strong>{p.title}</strong>
+                <div>{p.desc}</div>
+              </div>
+            ))}
+          </div>
+          <form className="chat-input" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Message Bot AI…"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              autoFocus
+            />
+            <button type="submit" className="btn btn-primary">Ask</button>
+            <button type="button" className="btn btn-ghost" onClick={handleSave}>Save</button>
+          </form>
+        </div>
+      </div>
+    ) : (
+      <div className="chat-container">
+        <div className="messages">
+          {messages.map((msg, i) => {
+            const isAI = msg.sender === "Soul AI";
+            return (
+              <div key={i} className={`message ${isAI ? "bot" : "user"}`}>
+                <span className="sender">{isAI ? "Bot AI" : "You"}</span>
+                <p>{msg.text}</p>
+                {isAI && (
+                  <div className="feedback-buttons">
+                    <button onClick={() => handleThumb(i, "like")}>👍</button>
+                    <button onClick={() => handleThumb(i, "dislike")}>👎</button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="rating" aria-label="conversation rating" role="region">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <span
+              key={n}
+              className={`star ${n <= stars ? "active" : ""}`}
+              onClick={() => setStars(n)}
+              role="button"
+              aria-label={`${n} star`}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setStars(n);
+              }}
             >
-              <strong>{p.title}</strong>
-              <div>{p.desc}</div>
-            </div>
+              ★
+            </span>
           ))}
         </div>
+        <textarea
+          className="textfeedback"
+          placeholder="Tell us what you thought about this conversation…"
+          value={textFeedback}
+          onChange={(e) => setTextFeedback(e.target.value)}
+          aria-label="Feedback about the conversation"
+        />
         <form className="chat-input" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Message Bot AI…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            autoFocus
           />
           <button type="submit" className="btn btn-primary">Ask</button>
-          <button type="button" className="btn btn-ghost" onClick={handleSave}>
-            Save
-          </button>
+          <button type="button" className="btn btn-ghost" onClick={handleSave}>Save</button>
         </form>
       </div>
-    );
-  }
+    )}
+  </>
+);
 
-  // Normal chat screen if messages exist
-  return (
-    <div className="chat-container">
-      <div className="messages">
-        {messages.map((msg, i) => {
-          const isAI = msg.sender === "Soul AI";
-          return (
-            <div key={i} className={`message ${isAI ? "bot" : "user"}`}>
-              <span className="sender">
-                {isAI ? <span>Soul AI</span> : "You"}
-              </span>
-              <p>{msg.text}</p>
-              {isAI && (
-                <div className="feedback-buttons">
-                  <button onClick={() => handleThumb(i, "like")}>👍</button>
-                  <button onClick={() => handleThumb(i, "dislike")}>👎</button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div className="rating" aria-label="conversation rating">
-        {[1,2,3,4,5].map((n) => (
-          <span
-            key={n}
-            className={`star ${n <= stars ? "active" : ""}`}
-            onClick={() => setStars(n)}
-            role="button"
-            aria-label={`${n} star`}
-          >
-            ★
-          </span>
-        ))}
-      </div>
-      <textarea
-        className="textfeedback"
-        placeholder="Tell us what you thought about this conversation…"
-        value={textFeedback}
-        onChange={(e) => setTextFeedback(e.target.value)}
-      />
-      <form className="chat-input" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Message Bot AI…"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button type="submit" className="btn btn-primary">Ask</button>
-        <button type="button" className="btn btn-ghost" onClick={handleSave}>
-          Save
-        </button>
-      </form>
-    </div>
-  );
 }
